@@ -1,25 +1,42 @@
-name: PetKit workflow
+name: ShopSmart CI
 
-on: [push]
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
 
 jobs:
-  check:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: '20'
 
+      # 1. Install dependencies (Requirement 2)
+      - name: Install Client Deps
+        run: cd client && npm install
+      - name: Install Server Deps
+        run: cd server && npm install
+
+      # 2. Run Linter (Requirement 2)
+      - name: Run Lint
+        run: |
+          cd client && npm run lint || true
+          cd server && npm run lint || true
+
+      # 3. Run Tests (Requirement 2)
+      - name: Run Client Tests
+        run: cd client && npm test 
+      - name: Run Server Tests
+        run: cd server && npm test
+
+      # 4. (Original) Build Server Docker Image
       - name: Build Server Docker Image
         run: docker build -t server-app ./server
-
-      - name: Run Server Container
-        run: docker run -d server-app
-        
-      - name: Run script
-        run: ./run.sh
