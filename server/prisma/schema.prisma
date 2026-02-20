@@ -4,9 +4,10 @@ generator client {
 
 datasource db {
   provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 
-// Beginner-friendly Product model
+// Simple and standard Product model for beginners
 model Product {
   id          Int      @id @default(autoincrement())
   name        String
