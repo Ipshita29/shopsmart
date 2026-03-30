@@ -15,5 +15,11 @@ jobs:
         with:
           node-version: 18
 
+      - name: Build Server Docker Image
+        run: docker build -t server-app ./server
+
+      - name: Run Server Container
+        run: docker run -d server-app
+        
       - name: Run script
         run: ./run.sh
