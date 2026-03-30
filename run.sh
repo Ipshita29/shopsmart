@@ -2,12 +2,12 @@
 
 echo "Starting setup..."
 
-# for frontend
+# for frontend setup 
 echo "Installing client..."
 cd client
 npm install
 
-# for backend
+# for backend setup
 echo "Installing server..."
 cd ../server
 npm install
