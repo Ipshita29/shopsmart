@@ -17,6 +17,3 @@ jobs:
 
       - name: Run script
         run: ./run.sh
-
-      - name: Done
-        run: echo "Client and Server setup successful!"
