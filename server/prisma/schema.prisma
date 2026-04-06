@@ -7,7 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Simple and standard Product model for beginners
 model Product {
   id          Int      @id @default(autoincrement())
   name        String
@@ -15,4 +14,15 @@ model Product {
   price       Float
   stock       Int      @default(0)
   createdAt   DateTime @default(now())
+}
+
+// Task 8: Order Model
+model Order {
+  id           Int      @id @default(autoincrement())
+  customerName String
+  address      String
+  petName      String
+  totalAmount  Float
+  status       String   @default("Pending")
+  createdAt    DateTime @default(now())
 }

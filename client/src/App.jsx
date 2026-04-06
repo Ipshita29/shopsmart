@@ -8,8 +8,9 @@ function App() {
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [orderComplete, setOrderComplete] = useState(false);
 
-  // Task 7: Customer & Pet Information State
+  // Customer & Pet Information State
   const [customerName, setCustomerName] = useState('');
   const [address, setAddress] = useState('');
   const [petName, setPetName] = useState('');
@@ -17,6 +18,7 @@ function App() {
   const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
   const fetchProducts = () => {
+    setLoading(true);
     fetch(`${apiUrl}/api/products`)
       .then((res) => res.json())
       .then((data) => {
@@ -46,23 +48,48 @@ function App() {
 
   const total = cart.reduce((sum, item) => sum + item.price, 0);
 
-  // Task 7: Handle Checkout Click
   const handleProceedToCheckout = () => {
     setIsCartOpen(false);
     setIsCheckoutOpen(true);
+  };
+
+  // Task 8: Submit Order to Backend
+  const handleSubmitOrder = (e) => {
+    e.preventDefault();
+    
+    const orderData = {
+      customerName,
+      address,
+      petName,
+      totalAmount: total
+    };
+
+    fetch(`${apiUrl}/api/orders`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderData),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log('Order successful:', data);
+        setOrderComplete(true);
+        setCart([]); // Clear cart
+      })
+      .catch((err) => {
+        console.error('Error placing order:', err);
+        alert('Something went wrong with your order. Please try again.');
+      });
   };
 
   return (
     <div className="container">
       <header>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <h1 onClick={() => setIsCheckoutOpen(false)} style={{ cursor: 'pointer' }}>
-              PetKit Now 🐾
-            </h1>
+          <div onClick={() => { setIsCheckoutOpen(false); setOrderComplete(false); }} style={{ cursor: 'pointer' }}>
+            <h1>PetKit Now 🐾</h1>
             <p>Premium Supplies for Your Furry Friends</p>
           </div>
-          {!isCheckoutOpen && (
+          {!isCheckoutOpen && !orderComplete && (
             <button className="cart-btn" onClick={() => setIsCartOpen(!isCartOpen)}>
               🛒 Cart ({cart.length})
             </button>
@@ -70,8 +97,20 @@ function App() {
         </div>
       </header>
 
-      {/* Task 7: Checkout Form Page */}
-      {isCheckoutOpen ? (
+      {/* Result Page: Order Success */}
+      {orderComplete ? (
+        <section className="success-page">
+          <div className="checkout-card" style={{ textAlign: 'center' }}>
+            <div className="success-icon">🐾</div>
+            <h2>Order Recieved!</h2>
+            <p className="subtitle">Thank you, {customerName}! We're preparing {petName}'s goodies for delivery.</p>
+            <button className="btn-submit" onClick={() => { setOrderComplete(false); setIsCheckoutOpen(false); }}>
+              Back to Shopping
+            </button>
+          </div>
+        </section>
+      ) : isCheckoutOpen ? (
+        /* Task 7 & 8: Checkout Form Page */
         <section className="checkout-page">
           <div className="checkout-card">
             <h2>Complete Your Order</h2>
@@ -82,7 +121,7 @@ function App() {
               <span>Items: {cart.length}</span>
             </div>
 
-            <form onSubmit={(e) => { e.preventDefault(); alert('Moving to Task 8: Order Submission!'); }}>
+            <form onSubmit={handleSubmitOrder}>
               <div className="form-group">
                 <label>Your Name</label>
                 <input 
@@ -178,9 +217,10 @@ function App() {
         </>
       )}
 
-      {/* Task 7 Styles */}
+      {/* Task 7-8 Styles */}
       <style>{`
-        .checkout-page { display: flex; justify-content: center; padding: 2rem 0; }
+        .success-icon { font-size: 4rem; margin-bottom: 1rem; }
+        .checkout-page, .success-page { display: flex; justify-content: center; padding: 2rem 0; }
         .checkout-card { background: white; padding: 3rem; border-radius: 2rem; border: 1px solid var(--border); box-shadow: var(--shadow); width: 100%; max-width: 600px; }
         .checkout-card h2 { color: var(--primary); font-size: 2rem; margin-bottom: 0.5rem; }
         .checkout-card .subtitle { color: var(--text-muted); margin-bottom: 2rem; }

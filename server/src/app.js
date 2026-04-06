@@ -21,16 +21,26 @@ app.get('/api/products', async (req, res) => {
   }
 });
 
-// 2. POST a new product (Create) - Task 4
-app.post('/api/products', async (req, res) => {
+// 2. POST a new order (Create) - Task 8
+app.post('/api/orders', async (req, res) => {
   try {
-    const { name, description, price, stock } = req.body;
-    const newProduct = await prisma.product.create({
-      data: { name, description, price, stock },
+    const { customerName, address, petName, totalAmount } = req.body;
+    
+    // Create the order in the database
+    const newOrder = await prisma.order.create({
+      data: {
+        customerName,
+        address,
+        petName,
+        totalAmount,
+      },
     });
-    res.status(201).json(newProduct);
+    
+    console.log(`✅ Order received from ${customerName} for ${petName}`);
+    res.status(201).json(newOrder);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create product' });
+    console.error('Order creation error:', error);
+    res.status(500).json({ error: 'Failed to process your order' });
   }
 });
 
