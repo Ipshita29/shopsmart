@@ -19,7 +19,6 @@ jobs:
         with:
           node-version: '20'
 
-      # 1. Server Setup & Test
       - name: Server - Install & Migrate
         run: |
           cd server
@@ -27,14 +26,12 @@ jobs:
           npx prisma generate
           npm test
 
-      # 2. Client Setup & Test
       - name: Client - Install & Test
         run: |
           cd client
           npm install
           npm test -- --run
 
-      # 3. Docker Verification (Requirement 2 & 10)
       - name: Build Docker Image
         run: |
           cd server

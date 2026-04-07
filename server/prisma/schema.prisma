@@ -7,16 +7,44 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  image     String?
+  products  Product[]
+}
+
 model Product {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String
+  price       Float
+  stock       Int       @default(0)
+  categoryId  Int?      // Link to category
+  category    Category? @relation(fields: [categoryId], references: [id])
+  createdAt   DateTime  @default(now())
+}
+
+model Vet {
+  id          Int      @id @default(autoincrement())
+  name        String
+  specialty   String
+  location    String
+  phone       String
+  distance    String   @default("0 km")
+  isOpen      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+model Service {
   id          Int      @id @default(autoincrement())
   name        String
   description String
   price       Float
-  stock       Int      @default(0)
+  icon        String?
   createdAt   DateTime @default(now())
 }
 
-// Task 8: Order Model
 model Order {
   id           Int      @id @default(autoincrement())
   customerName String
